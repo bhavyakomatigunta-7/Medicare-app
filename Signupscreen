@@ -1,0 +1,92 @@
+import SwiftUI
+
+struct SignupScreen: View {
+    @State private var selectedRole = ""
+    let roles = ["Doctor", "Lab Technician"]
+    @State private var userID = ""
+    @State private var password = ""
+
+    var body: some View {
+        ZStack {
+            LinearGradient(
+                gradient: Gradient(colors: [Color.black, Color(red: 18/255, green: 18/255, blue: 18/255)]),
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
+
+            VStack(spacing: 20) {
+                // Login logo at top
+                Image("medicare_stethoscope")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 80, height: 80)
+                    .padding(.top, 32)
+
+                Text("MedCare Portal")
+                    .font(.title2)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.white)
+                    .padding(.top, 12)
+
+                Text("Secure Healthcare Management System")
+                    .font(.footnote)
+                    .foregroundColor(Color(white: 0.7))
+                
+                // Role Picker
+                Picker("Select Role", selection: $selectedRole) {
+                    ForEach(roles, id: \.self) { role in
+                        Text(role).tag(role)
+                    }
+                }
+                .pickerStyle(SegmentedPickerStyle())
+                .padding()
+                .background(Color(.darkGray))
+                .cornerRadius(8)
+                .tint(Color(.systemTeal))
+                .padding(.horizontal)
+
+                // User ID TextField
+                TextField("User ID", text: $userID)
+                    .padding()
+                    .background(Color(.darkGray))
+                    .cornerRadius(8)
+                    .foregroundColor(.white)
+                    .padding(.horizontal)
+
+                // Password SecureField
+                SecureField("Password", text: $password)
+                    .padding()
+                    .background(Color(.darkGray))
+                    .cornerRadius(8)
+                    .foregroundColor(.white)
+                    .padding(.horizontal)
+
+                // Sign Up Button
+                Button(action: {
+                    // Signup logic here
+                }) {
+                    Text("Sign Up")
+                        .fontWeight(.semibold)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color(.systemTeal))
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                        .padding(.horizontal)
+                }
+
+                Spacer()
+            }
+        }
+    }
+}
+
+struct SignupScreenPreview: PreviewProvider {
+    static var previews: some View {
+        SignupScreen()
+            .preferredColorScheme(.dark)
+            .previewDevice("iPhone 16")
+    }
+}
+
