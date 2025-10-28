@@ -1,0 +1,267 @@
+import SwiftUI
+
+struct DashboardView: View {
+    struct Patient: Identifiable {
+        let id: String
+        let name: String
+        let status: PatientStatus
+    }
+    
+    enum PatientStatus {
+        case stable, critical, recovering
+        
+        var color: Color {
+            switch self {
+            case .stable: return .green
+            case .critical: return .red
+            case .recovering: return .blue
+            }
+        }
+        
+        var label: String {
+            switch self {
+            case .stable: return "Stable"
+            case .critical: return "Critical"
+            case .recovering: return "Recovering"
+            }
+        }
+    }
+    
+    let patients = [
+        Patient(id: "P001", name: "Sarah Johnson", status: .stable),
+        Patient(id: "P002", name: "Michael Chen", status: .critical),
+        Patient(id: "P003", name: "Emily Davis", status: .recovering)
+    ]
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            // Top section
+            HStack(alignment: .top) {
+                Circle()
+                    .fill(Color(.systemGreen))
+                    .frame(width: 54, height: 54)
+                    .overlay(
+                        Image(systemName: "person")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 28, height: 28)
+                            .foregroundColor(.black)
+                    )
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Welcome, Dr. Smith")
+                        .font(.system(size: 22, weight: .semibold))
+                        .foregroundColor(.white)
+                    Text("Tuesday, December 17")
+                        .font(.system(size: 15))
+                        .foregroundColor(Color(white: 0.7))
+                }
+                Spacer()
+                ZStack {
+                    Image(systemName: "bell")
+                        .font(.system(size: 22))
+                        .foregroundColor(Color(white: 0.7))
+                    Circle()
+                        .fill(Color.red)
+                        .frame(width: 12, height: 12)
+                        .offset(x: 10, y: -10)
+                }
+            }
+            .padding(.horizontal)
+            .padding(.top, 22)
+            .padding(.bottom, 8)
+            
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 15) {
+                    DashboardCard(
+                        icon: "waveform.path.ecg",
+                        iconBackground: Color.blue.opacity(0.3),
+                        iconColor: Color.blue,
+                        label: "Active Patients",
+                        value: "24",
+                        urgent: false,
+                        isDarkMode: true
+                    )
+                    DashboardCard(
+                        icon: "person.2.fill",
+                        iconBackground: Color(.darkGray).opacity(0.7),
+                        iconColor: Color(.lightGray),
+                        label: "Total Patients",
+                        value: "156",
+                        urgent: false,
+                        isDarkMode: true
+                    )
+                    DashboardCard(
+                        icon: "exclamationmark.triangle.fill",
+                        iconBackground: Color.red.opacity(0.3),
+                        iconColor: Color.red,
+                        label: "Critical Patients",
+                        value: "3",
+                        urgent: true,
+                        isDarkMode: true
+                    )
+                    
+                    // Recent patients header
+                    HStack {
+                        Text("Recent Patients")
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundColor(.white)
+                        Spacer()
+                        Button {
+                            // View all action
+                        } label: {
+                            Text("View All")
+                                .font(.system(size: 15))
+                                .foregroundColor(Color(.systemTeal))
+                        }
+                    }
+                    .padding(.horizontal, 8)
+                    .padding(.top, 2)
+                    
+                    VStack(spacing: 10) {
+                        ForEach(patients) { patient in
+                            PatientRow(patient: patient)
+                        }
+                    }
+                }
+                .padding(.bottom, 18)
+            }
+            
+            Spacer()
+            
+            // Tab bar
+            HStack {
+                TabBarItem(icon: "square.grid.2x2.fill", label: "Dashboard", active: true, isDarkMode: true)
+                Spacer()
+                TabBarItem(icon: "person.2", label: "Patients", active: false, isDarkMode: true)
+                Spacer()
+                TabBarItem(icon: "bell", label: "Alerts", active: false, isDarkMode: true)
+                Spacer()
+                TabBarItem(icon: "person.crop.circle", label: "Profile", active: false, isDarkMode: true)
+            }
+            .padding(.horizontal)
+            .padding(.vertical, 6)
+            .background(Color(.black).opacity(0.8))
+            .clipShape(RoundedRectangle(cornerRadius: 18))
+            .shadow(color: Color(.black).opacity(0.7), radius: 1, x: 0, y: 1)
+            .padding(.horizontal, 10)
+            .padding(.bottom, 6)
+        }
+        .background(Color.black.ignoresSafeArea())
+    }
+}
+
+struct DashboardCard: View {
+    let icon: String
+    let iconBackground: Color
+    let iconColor: Color
+    let label: String
+    let value: String
+    let urgent: Bool
+    var isDarkMode: Bool = false
+
+    var body: some View {
+        HStack {
+            ZStack {
+                RoundedRectangle(cornerRadius: 11)
+                    .fill(iconBackground)
+                    .frame(width: 44, height: 44)
+                Image(systemName: icon)
+                    .foregroundColor(iconColor)
+                    .font(.system(size: 24))
+            }
+            VStack(alignment: .leading, spacing: 2) {
+                Text(label)
+                    .font(.system(size: 14))
+                    .foregroundColor(isDarkMode ? Color(white: 0.7) : .gray)
+                Text(value)
+                    .font(.system(size: 23, weight: .bold))
+                    .foregroundColor(isDarkMode ? .white : .black)
+            }
+            Spacer()
+            if urgent {
+                Text("Urgent")
+                    .font(.system(size: 13, weight: .bold))
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(Color.red)
+                    .cornerRadius(18)
+            }
+        }
+        .padding()
+        .background(isDarkMode ? Color(.darkGray) : Color.white)
+        .cornerRadius(14)
+        .shadow(color: isDarkMode ? Color.black.opacity(0.7) : Color(.systemGray4), radius: 3, x: 0, y: 2)
+        .padding(.horizontal)
+    }
+}
+
+struct PatientRow: View {
+    let patient: DashboardView.Patient
+
+    var body: some View {
+        HStack {
+            Circle()
+                .fill(Color(.systemGray5))
+                .frame(width: 38, height: 38)
+                .overlay(
+                    Image(systemName: "person")
+                        .foregroundColor(.gray)
+                        .font(.system(size: 23))
+                )
+            VStack(alignment: .leading, spacing: 1) {
+                Text(patient.name)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.white)
+                Text("ID: \(patient.id)")
+                    .font(.system(size: 13))
+                    .foregroundColor(Color(white: 0.7))
+            }
+            Spacer()
+            HStack(spacing: 7) {
+                Circle()
+                    .fill(patient.status.color)
+                    .frame(width: 10, height: 10)
+                Text(patient.status.label)
+                    .font(.system(size: 14))
+                    .foregroundColor(.white)
+            }
+        }
+        .padding(.vertical, 8)
+        .padding(.horizontal)
+        .background(Color(.darkGray))
+        .cornerRadius(14)
+        .shadow(color: Color.black.opacity(0.7), radius: 2, x: 0, y: 1)
+        .padding(.horizontal)
+    }
+}
+
+struct TabBarItem: View {
+    var icon: String
+    var label: String
+    var active: Bool
+    var isDarkMode: Bool = false
+
+    var body: some View {
+        VStack(spacing: 3) {
+            Image(systemName: icon)
+                .font(.system(size: 22))
+                .foregroundColor(active ? Color(.systemTeal) : Color(white: 0.5))
+            Text(label)
+                .font(.system(size: 13))
+                .foregroundColor(active ? Color(.systemTeal) : Color(white: 0.5))
+        }
+        .padding(.vertical, 4)
+        .padding(.horizontal, 8)
+        .background(active ? Color(.systemTeal).opacity(0.16) : Color.clear)
+        .cornerRadius(8)
+    }
+}
+
+struct DashboardView_Previews: PreviewProvider {
+    static var previews: some View {
+        DashboardView()
+            .preferredColorScheme(.dark)
+    }
+}
+
