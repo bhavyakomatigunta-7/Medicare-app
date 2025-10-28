@@ -1,0 +1,281 @@
+import SwiftUI
+
+struct LabDashboardView: View {
+    struct LabPatient: Identifiable {
+        let id: String
+        let name: String
+        let pending: Bool
+        let urgent: Bool
+        let tests: [String]
+        let status: String
+        let statusColor: Color
+    }
+
+    let patients: [LabPatient] = [
+        LabPatient(
+            id: "P001",
+            name: "Sarah Johnson",
+            pending: true,
+            urgent: false,
+            tests: ["Blood Work", "Urinalysis"],
+            status: "Pending",
+            statusColor: .gray
+        ),
+        LabPatient(
+            id: "P002",
+            name: "Michael Chen",
+            pending: true,
+            urgent: true,
+            tests: ["CBC", "Lipid Panel"],
+            status: "Pending",
+            statusColor: .gray
+        )
+    ]
+
+    var body: some View {
+        VStack(spacing: 0) {
+            // Top profile section
+            HStack(alignment: .top) {
+                Circle()
+                    .fill(Color(.systemTeal))
+                    .frame(width: 40, height: 40)
+                    .overlay(
+                        Image(systemName: "testtube.2")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 22, height: 22)
+                            .foregroundColor(.white)
+                    )
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Welcome, Alex Rodriguez")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundColor(.white)
+                    Text("Lab Technician • Tuesday, Dec 17")
+                        .font(.system(size: 13))
+                        .foregroundColor(.gray)
+                }
+                Spacer()
+                ZStack {
+                    Image(systemName: "bell")
+                        .foregroundColor(.gray)
+                    Circle()
+                        .fill(Color.orange)
+                        .frame(width: 10, height: 10)
+                        .offset(x: 8, y: -8)
+                }
+            }
+            .padding(.horizontal)
+            .padding(.top, 16)
+            .padding(.bottom, 8)
+
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 12) {
+                    SummaryCard(icon: "person.2", iconColor: .blue, label: "Patients Assigned", value: "12", isDark: true)
+                    SummaryCard(icon: "doc.plaintext", iconColor: .green, label: "Reports Submitted Today", value: "8", isDark: true)
+                    SummaryCard(icon: "clock.arrow.circlepath", iconColor: .orange, label: "Pending Reports", value: "4", isDark: true)
+
+                    // Search box
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color(.darkGray))
+                        .frame(height: 38)
+                        .overlay(
+                            HStack {
+                                Image(systemName: "magnifyingglass")
+                                    .foregroundColor(.gray)
+                                TextField("Search patients or tests...", text: .constant(""))
+                                    .foregroundColor(.white)
+                            }
+                            .padding(.horizontal, 10)
+                        )
+                        .padding(.horizontal)
+
+                    // Lab Queue header
+                    HStack {
+                        Text("Lab Queue")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(.white)
+                        Spacer()
+                        Text("8 patients")
+                            .font(.system(size: 13))
+                            .foregroundColor(.gray)
+                            .padding(.trailing, 12)
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.top, 4)
+
+                    // Patient cards
+                    VStack(spacing: 12) {
+                        ForEach(patients) { patient in
+                            LabPatientCard(patient: patient, isDark: true)
+                        }
+                    }
+                }
+                .padding(.bottom, 10)
+            }
+
+            Spacer()
+
+            // Tab Bar
+            HStack {
+                LabTabBarItem(icon: "square.grid.2x2.fill", label: "Dashboard", active: true, isDark: true)
+                Spacer()
+                LabTabBarItem(icon: "clock.arrow.circlepath", label: "Queue", active: false, isDark: true)
+                Spacer()
+                LabTabBarItem(icon: "doc.plaintext", label: "Reports", active: false, isDark: true)
+                Spacer()
+                LabTabBarItem(icon: "person.crop.circle", label: "Profile", active: false, isDark: true)
+            }
+            .padding(.vertical, 6)
+            .padding(.horizontal, 4)
+            .background(Color(.black))
+            .clipShape(RoundedRectangle(cornerRadius: 18))
+            .shadow(color: Color.black.opacity(0.7), radius: 1)
+            .padding(.horizontal, 10)
+            .padding(.bottom, 8)
+        }
+        .background(Color.black.ignoresSafeArea())
+    }
+}
+
+// Summary Card (Dark mode aware)
+struct SummaryCard: View {
+    let icon: String
+    let iconColor: Color
+    let label: String
+    let value: String
+    var isDark: Bool = false
+
+    var body: some View {
+        HStack {
+            Circle()
+                .fill(iconColor.opacity(0.16))
+                .frame(width: 38, height: 38)
+                .overlay(
+                    Image(systemName: icon)
+                        .foregroundColor(iconColor)
+                        .font(.system(size: 20))
+                )
+            VStack(alignment: .leading, spacing: 1) {
+                Text(label)
+                    .font(.system(size: 13))
+                    .foregroundColor(.gray)
+                Text(value)
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundColor(isDark ? .white : .black)
+            }
+            Spacer()
+        }
+        .padding()
+        .background(isDark ? Color(.darkGray) : Color.white)
+        .cornerRadius(13)
+        .shadow(color: isDark ? Color.black.opacity(0.7) : Color(.systemGray5), radius: 3, x: 0, y: 1)
+        .padding(.horizontal, 8)
+    }
+}
+
+// Patient Card (Dark mode aware)
+struct LabPatientCard: View {
+    let patient: LabDashboardView.LabPatient
+    var isDark: Bool = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(alignment: .top) {
+                Circle()
+                    .fill(isDark ? Color(.black).opacity(0.27) : Color(.systemGray5))
+                    .frame(width: 32, height: 32)
+                    .overlay(
+                        Image(systemName: "person")
+                            .foregroundColor(.gray)
+                            .font(.system(size: 16))
+                    )
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(patient.name)
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundColor(isDark ? .white : .black)
+                    Text("ID: \(patient.id)")
+                        .font(.system(size: 12))
+                        .foregroundColor(.gray)
+                }
+                Spacer()
+                if patient.urgent {
+                    Text("Urgent")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundColor(.white)
+                        .padding(.vertical, 3)
+                        .padding(.horizontal, 10)
+                        .background(Color.red)
+                        .cornerRadius(13)
+                        .padding(.trailing, -2)
+                }
+                Circle()
+                    .fill(patient.urgent ? Color.orange : Color.orange.opacity(0.25))
+                    .frame(width: 10, height: 10)
+            }
+            .padding(.top, 4)
+            .padding(.horizontal, 3)
+
+            // Tests Required
+            Text("Tests Required:")
+                .font(.system(size: 12))
+                .foregroundColor(.gray)
+                .padding(.leading, 3)
+            HStack {
+                ForEach(patient.tests, id: \.self) { test in
+                    Text(test)
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundColor(.teal)
+                        .padding(.horizontal, 7)
+                        .padding(.vertical, 3)
+                        .background(isDark ? Color(.black).opacity(0.20) : Color(.systemGray6))
+                        .cornerRadius(7)
+                }
+            }
+            .padding(.leading, 3)
+
+            // Status
+            Text("Status: \(patient.status)")
+                .font(.system(size: 12))
+                .foregroundColor(.gray)
+                .padding(.leading, 3)
+                .padding(.bottom, 2)
+        }
+        .padding(.vertical, 6)
+        .padding(.horizontal)
+        .background(isDark ? Color(.darkGray) : Color.white)
+        .cornerRadius(13)
+        .shadow(color: isDark ? Color.black.opacity(0.7) : Color(.systemGray5), radius: 2, x: 0, y: 1)
+        .padding(.horizontal, 8)
+    }
+}
+
+// Tab Bar
+struct LabTabBarItem: View {
+    var icon: String
+    var label: String
+    var active: Bool
+    var isDark: Bool = false
+    var body: some View {
+        VStack(spacing: 2) {
+            Image(systemName: icon)
+                .font(.system(size: 22))
+                .foregroundColor(active ? Color(.systemTeal) : Color.gray)
+            Text(label)
+                .font(.system(size: 12))
+                .foregroundColor(active ? Color(.systemTeal) : Color.gray)
+        }
+        .padding(.vertical, 4)
+        .padding(.horizontal, 8)
+        .background(active ? Color(.systemTeal).opacity(0.20) : Color.clear)
+        .cornerRadius(8)
+    }
+}
+
+// Preview
+struct LabDashboardView_Previews: PreviewProvider {
+    static var previews: some View {
+        LabDashboardView()
+            .preferredColorScheme(.dark)
+    }
+}
+
