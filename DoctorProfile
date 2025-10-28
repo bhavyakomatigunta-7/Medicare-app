@@ -1,0 +1,234 @@
+import SwiftUI
+
+struct DoctorProfileView: View {
+    var body: some View {
+        NavigationView {
+            ScrollView {
+                VStack(spacing: 24) {
+                    
+                    VStack(spacing: 12) {
+                        Circle()
+                            .fill(LinearGradient(
+                                gradient: Gradient(colors: [Color.teal, Color.green]),
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing))
+                            .frame(width: 96, height: 96)
+                            .overlay(
+                                Image(systemName: "person.crop.circle")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .foregroundColor(.white)
+                                    .padding(20)
+                            )
+                        
+                        Text("Dr. John Smith")
+                            .font(.title2)
+                            .bold()
+                            .foregroundColor(.white)
+                        
+                        Text("Cardiology")
+                            .font(.subheadline)
+                            .foregroundColor(Color.teal)
+                        
+                        HStack(spacing: 6) {
+                            Image(systemName: "shield")
+                                .foregroundColor(.gray)
+                            Text("ID: DOC2024001")
+                                .foregroundColor(.gray)
+                                .font(.subheadline)
+                        }
+                    }
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Color(red: 30/255, green: 35/255, blue: 40/255))
+                    .cornerRadius(16)
+                    .shadow(color: Color.black.opacity(0.5), radius: 8, x: 0, y: 2)
+                    .padding(.horizontal)
+                    
+                    VStack(alignment: .leading, spacing: 18) {
+                        Text("Contact Information")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .padding(.bottom, 8)
+                        
+                        InfoRow(iconName: "envelope", label: "Email", value: "dr.smith@medcare.com")
+                        InfoRow(iconName: "phone", label: "Phone", value: "+1 (555) 123-4567")
+                        InfoRow(iconName: "gearshape", label: "Department", value: "Cardiovascular Medicine")
+                        InfoRow(iconName: "mappin.and.ellipse", label: "Location", value: "Floor 3, Wing A")
+                    }
+                    .padding()
+                    .background(Color(red: 30/255, green: 35/255, blue: 40/255))
+                    .cornerRadius(16)
+                    .shadow(color: Color.black.opacity(0.5), radius: 8, x: 0, y: 2)
+                    .padding(.horizontal)
+                    
+                    // Account Settings Section Added Here
+                    AccountSettingsSection()
+                    
+                    Spacer()
+                }
+                .padding(.top)
+            }
+            .background(Color.black.edgesIgnoringSafeArea(.all))
+            .navigationTitle("Profile")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: {
+                        // Back button action
+                    }) {
+                        Image(systemName: "chevron.left")
+                            .foregroundColor(.white)
+                    }
+                }
+            }
+        }
+        .navigationViewStyle(StackNavigationViewStyle())
+        .preferredColorScheme(.dark)
+    }
+}
+
+struct InfoRow: View {
+    let iconName: String
+    let label: String
+    let value: String
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 14) {
+            Image(systemName: iconName)
+                .font(.title3)
+                .foregroundColor(Color.teal.opacity(0.7))
+                .frame(width: 36, height: 36)
+                .background(Color.teal.opacity(0.15))
+                .cornerRadius(8)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(label)
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+                Text(value)
+                    .foregroundColor(.white)
+                    .font(.body)
+                    .lineLimit(nil)
+            }
+            Spacer()
+        }
+    }
+}
+
+// Account Settings Section as a Separate View
+struct AccountSettingsSection: View {
+    @State private var showEditProfile = false
+    @State private var showChangePassword = false
+    @State private var showNotificationPrefs = false
+    @State private var showLogoutAlert = false
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Text("Account Settings")
+                .font(.headline)
+                .foregroundColor(.white)
+                .padding()
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            Divider().background(Color.white.opacity(0.6))
+
+            accountSettingsRow(
+                iconName: "pencil",
+                title: "Edit Profile",
+                subtitle: "Update personal information",
+                action: { showEditProfile = true }
+            )
+            Divider().background(Color.white.opacity(0.6))
+            accountSettingsRow(
+                iconName: "lock",
+                title: "Change Password",
+                subtitle: "Update security credentials",
+                action: { showChangePassword = true }
+            )
+            Divider().background(Color.white.opacity(0.6))
+            accountSettingsRow(
+                iconName: "bell",
+                title: "Notification Preferences",
+                subtitle: "Manage alert settings",
+                action: { showNotificationPrefs = true }
+            )
+            Divider().background(Color.white.opacity(0.6))
+            accountSettingsRow(
+                iconName: "arrow.right.square",
+                title: "Logout",
+                subtitle: "Sign out of your account",
+                action: { showLogoutAlert = true },
+                iconColor: .red,
+                titleColor: .red,
+                subtitleColor: .red
+            )
+        }
+        .background(Color(red: 30/255, green: 35/255, blue: 40/255))
+        .cornerRadius(16)
+        .shadow(color: Color.black.opacity(0.5), radius: 8, x: 0, y: 2)
+        .padding(.horizontal)
+        .sheet(isPresented: $showEditProfile) {
+            Text("Edit Profile Screen (to implement)")
+                .font(.title)
+                .padding()
+        }
+        .sheet(isPresented: $showChangePassword) {
+            Text("Change Password Screen (to implement)")
+                .font(.title)
+                .padding()
+        }
+        .sheet(isPresented: $showNotificationPrefs) {
+            Text("Notification Preferences Screen (to implement)")
+                .font(.title)
+                .padding()
+        }
+        .alert(isPresented: $showLogoutAlert) {
+            Alert(
+                title: Text("Confirm Logout"),
+                message: Text("Are you sure you want to log out?"),
+                primaryButton: .destructive(Text("Logout")) {
+                    // Handle logout
+                },
+                secondaryButton: .cancel()
+            )
+        }
+    }
+
+    @ViewBuilder
+    private func accountSettingsRow(
+        iconName: String,
+        title: String,
+        subtitle: String,
+        action: @escaping () -> Void,
+        iconColor: Color = .teal,
+        titleColor: Color = .white,
+        subtitleColor: Color = Color.white.opacity(0.8)
+    ) -> some View {
+        Button(action: action) {
+            HStack {
+                Image(systemName: iconName)
+                    .foregroundColor(iconColor)
+                    .frame(width: 28, height: 28)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .foregroundColor(titleColor)
+                        .fontWeight(.medium)
+                    Text(subtitle)
+                        .foregroundColor(subtitleColor)
+                        .font(.footnote)
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .foregroundColor(Color.white.opacity(0.6))
+            }
+            .padding()
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
+
+#Preview {
+    DoctorProfileView()
+}
+
