@@ -1,0 +1,134 @@
+import SwiftUI
+
+struct ContentView: View {
+    @State private var selectedRole = ""
+    let roles = ["Patient", "Doctor", "Admin"]
+    @State private var userID = ""
+    @State private var password = ""
+    
+    @State private var naviagte = false
+    
+    var body: some View {
+        NavigationStack {
+            
+//            ZStack {
+//                LinearGradient(
+//                    gradient: Gradient(colors: [Color.white, Color(.systemTeal).opacity(0.14)]),
+//                    startPoint: .top, endPoint: .bottom
+//                )
+//                .ignoresSafeArea()
+                
+                VStack(spacing: 0) {
+                    Image("medcare_icon") // Make sure this PNG is in Assets.xcassets
+                        .resizable()
+                        .frame(width: 64, height: 64)
+                        .padding(.top, 32)
+                    
+                    Text("MedCare Portal")
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                        .padding(.top, 12)
+                    
+                    Text("Secure Healthcare Management System")
+                        .font(.footnote)
+                        .foregroundColor(.gray)
+                        .padding(.top, 2)
+                    
+                    Spacer().frame(height: 22)
+                    
+                    VStack(alignment: .leading, spacing: 20) {
+                        Text("Sign In")
+                            .font(.title3)
+                            .fontWeight(.medium)
+                        
+                        Text("Access your healthcare dashboard")
+                            .font(.footnote)
+                            .foregroundColor(.gray)
+                        
+                        VStack(alignment: .leading) {
+                            Text("Role").font(.footnote)
+                            Picker("Select your role", selection: $selectedRole) {
+                                Text("Select your role").tag("")
+                                ForEach(roles, id: \.self) { role in
+                                    Text(role).tag(role)
+                                }
+                            }
+                            .pickerStyle(MenuPickerStyle())
+                            .padding()
+                            .background(Color(.systemGray6))
+                            .cornerRadius(8)
+                        }
+                        
+                        VStack(alignment: .leading) {
+                            Text("User ID").font(.footnote)
+                            TextField("Enter User ID", text: $userID)
+                                .padding()
+                                .background(Color(.systemGray6))
+                                .cornerRadius(8)
+                        }
+                        
+                        VStack(alignment: .leading) {
+                            Text("Password").font(.footnote)
+                            SecureField("Enter your password", text: $password)
+                                .padding()
+                                .background(Color(.systemGray6))
+                                .cornerRadius(8)
+                        }
+                        
+                        Button(action: {
+                            naviagte = true
+                        }) {
+                            Text("Sign In to MedCare")
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color(.systemTeal))
+                                .cornerRadius(8)
+                        }
+                        
+                        Button("Forgot your password?") {
+                            // Add password reset logic
+                        }
+                        .font(.footnote)
+                        .foregroundColor(.teal)
+                        
+                        HStack(spacing: 8) {
+                            Image(systemName: "checkmark.shield")
+                                .foregroundColor(.teal)
+                            Text("Your login is secured with enterprise-grade encryption. Never share your credentials with others.")
+                                .font(.caption)
+                                .foregroundColor(.teal)
+                        }
+                        .padding()
+                        .background(Color(.systemTeal).opacity(0.08))
+                        .cornerRadius(12)
+                    }
+                    .padding()
+                    .background(Color.white)
+                    .cornerRadius(20)
+                    .shadow(color: Color(.systemGray3), radius: 6, x: 0, y: 4)
+                    .padding(.top, 18)
+                    
+                    Spacer()
+                    
+                    Text("© 2024 MedCare Portal. All rights reserved.")
+                        .font(.caption2)
+                        .padding(.bottom, 12)
+                        .foregroundColor(.gray)
+                }
+                .padding(.horizontal)
+                .navigationDestination(isPresented: $naviagte) {
+                    SignupScreen()
+                }
+         //   }
+        }
+        
+    }
+}
+
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
+}
+
